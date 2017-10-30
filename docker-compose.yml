@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+      - ./src:/app
+      - /app/node_modules
+      - ./package.json:/app/package.json
+    depends_on:
+      - database
+    environment:
+      - LOGGING=true
+    command: node ./node_modules/.bin/nodemon --legacy-watch --watch server.js --watch api server.js
+  database:
+    image: mvertes/alpine-mongo
