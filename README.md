@@ -4,7 +4,9 @@
 
 ## Requirements
 * Docker
+
 or
+
 * NodeJS
 * NPM
 * MongoDB
@@ -18,4 +20,5 @@ or
 ### Run tests
 
 While server is up and running, use the following:
+
 `docker-compose exec web node_modules/.bin/lab`
