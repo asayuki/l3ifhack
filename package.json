@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.5.1",
+    "boom": "^6.0.0",
     "hapi": "^16.6.2",
     "hapi-auth-cookie": "^7.0.0",
     "hapi-auth-jwt": "^4.0.0",
