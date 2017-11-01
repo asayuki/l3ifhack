@@ -25,6 +25,7 @@ Project.remove({}).then();
  */
 experiment('projects', () => {
   let projectId = null;
+  let joineeId = null;
 
   test('Create project POST /api/projects', () => {
     return server.inject({
@@ -42,17 +43,6 @@ experiment('projects', () => {
 
       projectId = response.result.projectId;
     })
-  });
-
-  test('Get project GET /api/projects/{id}', () => {
-    return server.inject({
-      method: 'GET',
-      url: '/api/projects/' + projectId
-    }).then((response) => {
-      expect(response.statusCode).to.equal(200);
-      expect(response.result.project).to.be.an.object();
-      expect(response.result.project.title).to.equal('My project');
-    });
   });
 
   test('Upvote project PUT /api/projects/{id}/upvote', () => {
@@ -84,7 +74,34 @@ experiment('projects', () => {
       }
     }).then((response) => {
       expect(response.statusCode).to.equal(200);
-      expect(response.result.joined).to.be.true();
+      expect(response.result.project).to.be.an.object();
+      expect(response.result.project.joinees).to.be.an.array();
+      expect(response.result.project.joinees[0].name).to.contain('Testia Testus');
+
+      joineeId = response.result.project.joinees[0]._id;
+    });
+  });
+
+  test('Dejoin a joinee from a project DELETE /api/projects/{id}/joinee/{joinee}', () => {
+    return server.inject({
+      method: 'DELETE',
+      url: '/api/projects/' + projectId + '/joinee/' + joineeId
+    }).then((response) => {
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.joineeRemoved).to.be.true();
+    });
+  });
+
+  test('Get project GET /api/projects/{id}', () => {
+    return server.inject({
+      method: 'GET',
+      url: '/api/projects/' + projectId
+    }).then((response) => {
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.project).to.be.an.object();
+      expect(response.result.project.title).to.equal('My project');
+      expect(response.result.project.joinees).to.be.empty();
+      expect(response.result.project.votes).to.be.equal(0);
     });
   });
 

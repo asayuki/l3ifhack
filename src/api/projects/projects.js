@@ -58,16 +58,12 @@ exports.register = (server, options, next) => {
           params: getSchema
         },
         handler: (request, response) => {
-          Project.findById(request.params.id).then((project) => {
-            Project.update({_id: request.params.id}, {$set: {
-              votes: (project.votes + 1)
-            }}).then((updatedProject) => {
-              return response({
-                voted: true
-              }).code(200);
-            }, (error) => {
-              return response(badImplementation('Could not vote on the project'));
-            });
+          Project.findByIdAndUpdate(request.params.id, {$inc: {
+            votes: 1
+          }}, {new: true}).then((updatedProject) => {
+            return response({
+              voted: true
+            }).code(200);
           }, (error) => {
             return response(notFound('Could not find project'));
           });
@@ -83,16 +79,12 @@ exports.register = (server, options, next) => {
           params: getSchema
         },
         handler: (request, response) => {
-          Project.findById(request.params.id).then((project) => {
-            Project.update({_id: request.params.id}, {$set: {
-              votes: (project.votes - 1)
-            }}).then((updatedProject) => {
-              return response({
-                voted: true
-              }).code(200);
-            }, (error) => {
-              return response(badImplementation('Could not vote on the project'));
-            });
+          Project.findByIdAndUpdate(request.params.id, {$inc: {
+            votes: -1
+          }}, {new: true}).then((updatedProject) => {
+            return response({
+              voted: true
+            }).code(200);
           }, (error) => {
             return response(notFound('Could not find project'));
           });
@@ -108,21 +100,16 @@ exports.register = (server, options, next) => {
           params: joinSchema
         },
         handler: (request, response) => {
-          Project.findById(request.params.id).then((project) => {
-            Project.update({_id: request.params.id}, {$addToSet: {
-              joinees: {
-                name: request.payload.joinee
-              }
-            }}).then((updatedProject) => {
-              console.log(updatedProject);
-              return response({
-                joined: true
-              }).code(200);
-            }, (error) => {
-              return response(badImplementation('Could not join the project'));
-            });
+          Project.findByIdAndUpdate(request.params.id, {$addToSet: {
+            joinees: {
+              name: request.payload.joinee
+            }
+          }}, {new: true}).then((updatedProject) => {
+            return response({
+              project: updatedProject
+            }).code(200);
           }, (error) => {
-            return response(notFound('Could not find project'));
+            return response(badImplementation('Could not join the project'));
           });
         }
       }
@@ -142,6 +129,29 @@ exports.register = (server, options, next) => {
             }).code(200);
           }, (error) => {
             return response(notFound('Could not find project'));
+          });
+        }
+      }
+    },
+
+    {
+      method: 'DELETE',
+      path: '/api/projects/{id}/joinee/{joinee}',
+      config: {
+        validate: {
+          params: joinSchema
+        },
+        handler: (request, response) => {
+          Project.findByIdAndUpdate(request.params.id, {$pull: {
+            joinees: {
+              _id: request.params.joinee
+            }
+          }}, {new: true}).then((updatedProject) => {
+            return response({
+              joineeRemoved: true
+            }).code(200);
+          }, (error) => {
+            return response(notFound('Could not remove from project'));
           });
         }
       }
