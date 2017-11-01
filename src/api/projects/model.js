@@ -21,7 +21,11 @@ const project = new Schema({
   },
   votes: {
     type: Number
-  }
+  },
+  joinees: [{
+    name: String,
+    required: true
+  }]
 });
 
 project.index({

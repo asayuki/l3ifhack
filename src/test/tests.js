@@ -56,15 +56,39 @@ experiment('projects', () => {
   });
 
   test('Upvote project PUT /api/projects/{id}/upvote', () => {
-    fail();
+    return server.inject({
+      method: 'PUT',
+      url: '/api/projects/' + projectId + '/upvote'
+    }).then((response) => {
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.project).to.be.an.object();
+      expect(response.result.project.votes).to.equal(1);
+    });
   });
 
   test('Downvote project PUT /api/projects/{id}/downvote', () => {
-    fail();
+    return server.inject({
+      method: 'PUT',
+      url: '/api/projects/' + projectId + '/downvote'
+    }).then((response) => {
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.project).to.be.an.object();
+      expect(response.result.project.votes).to.equal(0);
+    });
   });
 
   test('Join project POST /api/projects/{id}/join', () => {
-    fail();
+    return server.inject({
+      metod: 'POST',
+      url: '/api/projects/' + projectId + '/join',
+      payload: {
+        joinee: 'Testia Testus'
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(201);
+      expect(response.result.project).to.be.an.object();
+      expect(response.result.project.joinees).to.contain('Testia Testus');
+    });
   });
 
   test('Remove project DELETE /api/projects/{id}', () => {

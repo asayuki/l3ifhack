@@ -30,6 +30,23 @@ exports.register = (server, options, next) => {
           });
         }
       }
+    },
+
+    {
+      method: 'GET',
+      path: '/api/projects/{id}',
+      config: {
+        validate: {
+          params: getSchema
+        },
+        handler: (request, response) => {
+          Project.findById(request.params.id).then((project) => {
+            return response({project: project});
+          }, (error) => {
+            return response(notFound('Could not find project'));
+          });
+        }
+      }
     }
   ]);
 
