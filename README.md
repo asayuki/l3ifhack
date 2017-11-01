@@ -1,6 +1,8 @@
 # L3ifhack
 
-[Description here]
+Platform for creating and managing projects towards a Hackathon.
+
+Basic functionality includes creating and listing active projects plus building teams around interesting projects in preparation for the event.
 
 ## Requirements
 * Docker
