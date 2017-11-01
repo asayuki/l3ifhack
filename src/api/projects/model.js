@@ -20,11 +20,14 @@ const project = new Schema({
     required: true
   },
   votes: {
-    type: Number
+    type: Number,
+    default: 0
   },
   joinees: [{
-    name: String,
-    required: true
+    name: {
+      type: String,
+      required: true
+    } 
   }]
 });
 

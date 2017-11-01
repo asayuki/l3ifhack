@@ -16,18 +16,14 @@ const deleteSchema = Joi.object({
   id: Joi.string().required()
 });
 
-const upvoteSchema = Joi.object({
-  upvote: Joi.boolean().required()
-});
-
-const downvoteSchema = Joi.object({
-  downvote: Joi.boolean().required()
-});
+const joinSchema = Joi.object({
+  id: Joi.string().required(),
+  joinee: Joi.string().required()
+})
 
 module.exports = {
   createSchema,
   getSchema,
   deleteSchema,
-  upvoteSchema,
-  downvoteSchema
+  joinSchema
 };

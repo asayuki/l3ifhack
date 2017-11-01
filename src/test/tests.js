@@ -61,8 +61,7 @@ experiment('projects', () => {
       url: '/api/projects/' + projectId + '/upvote'
     }).then((response) => {
       expect(response.statusCode).to.equal(200);
-      expect(response.result.project).to.be.an.object();
-      expect(response.result.project.votes).to.equal(1);
+      expect(response.result.voted).to.be.true();
     });
   });
 
@@ -72,26 +71,30 @@ experiment('projects', () => {
       url: '/api/projects/' + projectId + '/downvote'
     }).then((response) => {
       expect(response.statusCode).to.equal(200);
-      expect(response.result.project).to.be.an.object();
-      expect(response.result.project.votes).to.equal(0);
+      expect(response.result.voted).to.be.true();
     });
   });
 
   test('Join project POST /api/projects/{id}/join', () => {
     return server.inject({
-      metod: 'POST',
+      method: 'POST',
       url: '/api/projects/' + projectId + '/join',
       payload: {
         joinee: 'Testia Testus'
       }
     }).then((response) => {
-      expect(response.statusCode).to.equal(201);
-      expect(response.result.project).to.be.an.object();
-      expect(response.result.project.joinees).to.contain('Testia Testus');
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.joined).to.be.true();
     });
   });
 
   test('Remove project DELETE /api/projects/{id}', () => {
-    fail();
+    return server.inject({
+      method: 'DELETE',
+      url: '/api/projects/' + projectId
+    }).then((response) => {
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.removed).to.be.true();
+    });
   });
 });
