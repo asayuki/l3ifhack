@@ -10,7 +10,7 @@ Server.connection({
 });
 
 Server.register([
-    require('./api/ideas/ideas')
+    require('./api/projects/projects')
 ], (registerError) => {
     if (registerError) {
         throw registerError;

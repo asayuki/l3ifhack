@@ -15,59 +15,59 @@ const db = Mongoose.connect(process.env.MONGO_URL + process.env.MONGO_DB, {
 });
 
 // Models
-const Idea = require('../api/ideas/model');
+const Project = require('../api/projects/model');
 
 // Clear collections before testing
-Idea.remove({}).then();
+Project.remove({}).then();
 
 /**
  * Write tests here
  */
-experiment('ideas', () => {
-  let ideaId = null;
+experiment('projects', () => {
+  let projectId = null;
 
-  test('Create idea POST /api/ideas', () => {
+  test('Create project POST /api/projects', () => {
     return server.inject({
       method: 'POST',
-      url: '/api/ideas',
+      url: '/api/projects',
       payload: {
-        title: 'My idea',
-        text: 'My idea text',
+        title: 'My project',
+        text: 'My project text',
         author: 'testauthor'
       }
     }).then((response) => {
       expect(response.statusCode).to.equal(201);
-      expect(response.result.ideaCreated).to.be.true();
-      expect(response.result.ideaId).to.be.an.object();
+      expect(response.result.projectCreated).to.be.true();
+      expect(response.result.projectId).to.be.an.object();
 
-      ideaId = response.result.ideaId;
+      projectId = response.result.projectId;
     })
   });
 
-  test('Get idea GET /api/ideas/{id}', () => {
+  test('Get project GET /api/projects/{id}', () => {
     return server.inject({
       method: 'GET',
-      url: '/api/ideas/' + ideaId
+      url: '/api/projects/' + projectId
     }).then((response) => {
       expect(response.statusCode).to.equal(200);
-      expect(response.result.idea).to.be.an.object();
-      expect(response.result.idea.title).to.equal('My idea');
+      expect(response.result.project).to.be.an.object();
+      expect(response.result.project.title).to.equal('My project');
     });
   });
 
-  test('Upvote idea PUT /api/ideas/{id}/upvote', () => {
+  test('Upvote project PUT /api/projects/{id}/upvote', () => {
     fail();
   });
 
-  test('Downvote idea PUT /api/ideas/{id}/downvote', () => {
+  test('Downvote project PUT /api/projects/{id}/downvote', () => {
     fail();
   });
 
-  test('Join idea POST /api/ideas/{id}/join', () => {
+  test('Join project POST /api/projects/{id}/join', () => {
     fail();
   });
 
-  test('Remove idea DELETE /api/ideas/{id}', () => {
+  test('Remove project DELETE /api/projects/{id}', () => {
     fail();
   });
 });

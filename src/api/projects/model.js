@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const idea = new Schema({
+const project = new Schema({
   title: {
     type: String,
     required: true,
@@ -24,8 +24,8 @@ const idea = new Schema({
   }
 });
 
-idea.index({
+project.index({
   title: 'text'
 });
 
-module.exports = mongoose.model('Idea', idea);
+module.exports = mongoose.model('Project', project);

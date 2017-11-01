@@ -2,28 +2,28 @@
 
 const { createSchema, getSchema, deleteSchema } = require('./schema.js');
 const { badImplementation, notFound, conflict } = require('boom');
-const Idea = require('./model');
+const Project = require('./model');
 
 exports.register = (server, options, next) => {
   server.route([
     {
       method: 'POST',
-      path: '/api/ideas',
+      path: '/api/projects',
       config: {
         validate: {
           payload: createSchema
         },
         handler: (request, response) => {
-          let idea = new Idea();
-          Object.assign(idea, request.payload);
-          idea.save().then((newIdea) => {
+          let project = new Project();
+          Object.assign(project, request.payload);
+          project.save().then((newProject) => {
             return response({
-              ideaCreated: true,
-              ideaId: newIdea._id
+              projectCreated: true,
+              projectId: newProject._id
             }).code(201);
           }, (error) => {
             if (error.name === 'MongoError' && error.code == 11000) {
-              return response(conflict('There is an idea with that name already.'))
+              return response(conflict('There is a project with that name already.'))
             } else {
               return response(badImplementation('There was an unsuspected error.'))
             }
@@ -37,10 +37,10 @@ exports.register = (server, options, next) => {
 };
 
 exports.register.attributes = {
-  name: 'Ideas',
+  name: 'Projects',
   version: '1.0.0',
-  description: 'Idea plugin for L3ifhack',
-  main: 'ideas.js',
+  description: 'Project plugin for L3ifhack',
+  main: 'projects.js',
   author: 'neme <neme@whispered.se>',
   license: 'MIT'
 };
