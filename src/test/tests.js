@@ -105,6 +105,24 @@ experiment('projects', () => {
     });
   });
 
+  test('Edit project PUT /api/projects/{id}/edit', () => {
+    return server.inject({
+      method: 'PUT',
+      url: '/api/projects/' + projectId + '/edit',
+      payload: {
+        title: 'My edited project',
+        text: 'My edited project text',
+        author: 'Edited testauthor'
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.project.title).to.equal('My edited project');
+      expect(response.result.project.text).to.equal('My edited project text');
+      expect(response.result.project.author).to.equal('Edited testauthor');
+      expect(response.result.edited).to.be.true();
+    });
+  });
+
   test('Remove project DELETE /api/projects/{id}', () => {
     return server.inject({
       method: 'DELETE',

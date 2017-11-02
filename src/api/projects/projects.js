@@ -52,6 +52,30 @@ exports.register = (server, options, next) => {
 
     {
       method: 'PUT',
+      path: '/api/projects/{id}/edit',
+      config: {
+        validate: {
+          params: getSchema
+        },
+        handler: (request, response) => {
+          Project.findByIdAndUpdate(request.params.id, {$set: {
+            title: request.payload.title,
+            text: request.payload.text,
+            author: request.payload.author
+          }}, {new: true}).then((editedProject) => {
+            return response({
+              edited: true,
+              project: editedProject
+            }).code(200);
+          }, (error) => {
+            return response(notFound('Could not find project'));
+          });
+        }
+      }
+    },
+
+    {
+      method: 'PUT',
       path: '/api/projects/{id}/upvote',
       config: {
         validate: {
