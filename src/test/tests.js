@@ -45,6 +45,34 @@ experiment('projects', () => {
     })
   });
 
+  test('Create project POST with invalid payload /api/projects', () => {
+    return server.inject({
+      method: 'POST',
+      url: '/api/projects',
+      payload: {
+        title: '',
+        text: '',
+        author: ''
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(400);
+    })
+  });
+
+  test('Create project POST with same name (title) /api/projects', () => {
+    return server.inject({
+      method: 'POST',
+      url: '/api/projects',
+      payload: {
+        title: 'My project',
+        text: 'My project text',
+        author: 'testauthor'
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(409);
+    })
+  });
+
   test('Upvote project PUT /api/projects/{id}/upvote', () => {
     return server.inject({
       method: 'PUT',
@@ -122,6 +150,18 @@ experiment('projects', () => {
       expect(response.result.edited).to.be.true();
     });
   });
+
+  test('Edit a project PUT with invalid title data /api/projects/{id}/edit', () => {
+    return server.inject({
+      method: 'PUT',
+      url: '/api/projects/' + projectId + '/edit',
+      payload: {
+        title: '',
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(400);
+    });
+  })
 
   test('Remove project DELETE /api/projects/{id}', () => {
     return server.inject({
