@@ -24,3 +24,7 @@ or
 While server is up and running, use the following:
 
 `docker-compose exec web node_modules/.bin/lab`
+
+### Todo
+
+We need a gitlab-ci file
