@@ -42,7 +42,21 @@ experiment('projects', () => {
       expect(response.result.projectId).to.be.an.object();
 
       projectId = response.result.projectId;
-    })
+    });
+  });
+
+  test('Create project with empty title POST /api/projects', () => {
+    return server.inject({
+      method: 'POST',
+      url: '/api/projects',
+      payload: {
+        title: '',
+        text: 'text',
+        author: 'author'
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(400);
+    });
   });
 
   test('Upvote project PUT /api/projects/{id}/upvote', () => {
