@@ -1,6 +1,9 @@
 before_script:
   - docker info
 
+services:
+  - docker:dind
+
 build_image:
   script:
     - docker-compose -f docker-compose.test.yml up --abort-on-container-exit
