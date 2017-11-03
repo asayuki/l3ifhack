@@ -2,6 +2,7 @@
 
 process.env.PORT = 8001;
 process.env.LOGGING = false;
+process.env.MONGO_URL = process.env.MONGO_URL || 'mongodb://database/';
 process.env.MONGO_DB = 'l3ifhacktest';
 
 const server = require('../server.js');

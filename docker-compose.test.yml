@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  ci:
+    build: .
+    depends_on:
+      - database
+    environment:
+      - MONGO_URL=mongodb://database/
+      - MONGO_DB=l3ifhack
+    command: node ./node_modules/.bin/lab
+  database:
+    image: mvertes/alpine-mongo
