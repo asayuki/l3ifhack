@@ -51,6 +51,20 @@ exports.register = (server, options, next) => {
     },
 
     {
+      method: 'GET',
+      path: '/api/projects/',
+      config: {
+        handler: (request, response) => {
+          Project.find().then((allProjects) => {
+            return response({allProjects: allProjects}).code(200);
+          }, (error) => {
+            return response(notFound('No projects found'));
+          });
+        }
+      }
+    },
+
+    {
       method: 'PUT',
       path: '/api/projects/{id}/edit',
       config: {
