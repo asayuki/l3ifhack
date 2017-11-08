@@ -55,7 +55,8 @@ exports.register = (server, options, next) => {
       path: '/api/projects/{id}/edit',
       config: {
         validate: {
-          params: getSchema
+          params: getSchema,
+          payload: createSchema
         },
         handler: (request, response) => {
           Project.findByIdAndUpdate(request.params.id, {$set: {
