@@ -2,17 +2,17 @@
 
 process.env.PORT = 8001;
 process.env.LOGGING = false;
-process.env.MONGO_URL = process.env.MONGO_URL || 'mongodb://mongo/';
-process.env.MONGO_DB = 'l3ifhacktest';
+process.env.MONGO_URL = 'mongodb://mongo/l3ifhacktest';
 process.env.REDISCLOUD_URL = process.env.REDISCLOUD_URL || 'http://redis:6379';
 
 const server = require('../server.js');
 const { expect, fail } = require('code');
-const { experiment, test } = exports.lab = require('lab').script();
+const { experiment, test, before } = exports.lab = require('lab').script();
 const Mongoose = require('mongoose');
+const Bcrypt = require('bcrypt');
 
 Mongoose.Promise = require('bluebird');
-const db = Mongoose.connect(process.env.MONGO_URL + process.env.MONGO_DB, {
+const db = Mongoose.connect(process.env.MONGO_URL, {
   useMongoClient: true
 });
 
@@ -20,12 +20,11 @@ const db = Mongoose.connect(process.env.MONGO_URL + process.env.MONGO_DB, {
 const Project = require('../api/projects/model');
 const User = server.plugins['hapi-users-plugin'].Usermodel;
 
-console.log(User);
-
 // ADD BCRYT AND STUFF
 
 // Clear collections before testing
 Project.remove({}).then();
+User.remove({}).then();
 
 /**
  * Write tests here
@@ -33,6 +32,39 @@ Project.remove({}).then();
 experiment('projects', () => {
   let projectId = null;
   let joineeId = null;
+  let userToken = null;
+
+  before (() => {
+    return new Promise((resolve) => {
+      let user = new User();
+      user.username = 'testuser';
+      user.admin = true;
+
+      Bcrypt.genSalt(10, (error, salt) => {
+        Bcrypt.hash(password, salt, (error, hash) => {
+          user.password = hash;
+          user.save().then(() => {
+            resolve();
+          });
+        });
+      });
+    });
+  });
+
+  test('Login user', () => {
+      return server.inject({
+          method: 'POST',
+          url: '/api/users/authenticate',
+          payload: {
+              username: 'testuser',
+              password: 'testpassword'
+          }
+      }).then((response) => {
+          expect(response.statusCode).to.equal(200);
+          expect(response.headers.authorization).to.be.a.string();
+          userToken = response.headers.authorization;
+      });
+  });
 
   test('Create project POST /api/projects', () => {
     return server.inject({
