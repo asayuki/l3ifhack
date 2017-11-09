@@ -18,6 +18,11 @@ const db = Mongoose.connect(process.env.MONGO_URL + process.env.MONGO_DB, {
 
 // Models
 const Project = require('../api/projects/model');
+const User = server.plugins['hapi-users-plugin'].Usermodel;
+
+console.log(User);
+
+// ADD BCRYT AND STUFF
 
 // Clear collections before testing
 Project.remove({}).then();
