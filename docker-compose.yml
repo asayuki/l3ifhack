@@ -22,5 +22,10 @@ services:
     command: node ./node_modules/.bin/nodemon --legacy-watch --watch server.js --watch api server.js
   mongo:
     image: mvertes/alpine-mongo
+    volumes:
+      - mongodata:/data/db
   redis:
     image: redis:4-alpine
+
+volumes:
+  mongodata:

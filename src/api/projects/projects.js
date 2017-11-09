@@ -52,8 +52,11 @@ exports.register = (server, options, next) => {
 
     {
       method: 'GET',
-      path: '/api/projects/',
+      path: '/api/projects',
       config: {
+        auth: {
+          strategy: 'jwt'
+        },
         handler: (request, response) => {
           Project.find().then((allProjects) => {
             return response({allProjects: allProjects}).code(200);
