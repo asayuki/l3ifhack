@@ -2,8 +2,9 @@
 
 process.env.PORT = 8001;
 process.env.LOGGING = false;
-process.env.MONGO_URL = process.env.MONGO_URL || 'mongodb://database/';
+process.env.MONGO_URL = process.env.MONGO_URL || 'mongodb://mongo/';
 process.env.MONGO_DB = 'l3ifhacktest';
+process.env.REDISCLOUD_URL = process.env.REDISCLOUD_URL || 'http://redis:6379';
 
 const server = require('../server.js');
 const { expect, fail } = require('code');

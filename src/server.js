@@ -10,6 +10,8 @@ Server.connection({
 });
 
 Server.register([
+    require('hapi-auth-jwt2'),
+    require('hapi-users-plugin'),
     require('./api/projects/projects')
 ], (registerError) => {
     if (registerError) {
@@ -22,7 +24,7 @@ Server.register([
         }
         
         Mongoose.Promise = require('bluebird');
-        Mongoose.connect(process.env.MONGO_URL + process.env.MONGO_DB, {
+        Mongoose.connect(process.env.MONGO_URL, {
             useMongoClient: true
         }, (mongoError) => {
             if (mongoError) {

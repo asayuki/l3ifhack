@@ -12,11 +12,15 @@ services:
       - /app/node_modules
       - ./package.json:/app/package.json
     depends_on:
-      - database
+      - mongo
+      - redis
     environment:
       - LOGGING=true
-      - MONGO_URL=mongodb://database/
-      - MONGO_DB=l3ifhack
+      - MONGO_URL=mongodb://mongo/l3ifhack
+      - REDIS=redis://redis:6379
+      - TOKEN_SECRET=TOKENSECRET
     command: node ./node_modules/.bin/nodemon --legacy-watch --watch server.js --watch api server.js
-  database:
+  mongo:
     image: mvertes/alpine-mongo
+  redis:
+    image: redis:4-alpine
