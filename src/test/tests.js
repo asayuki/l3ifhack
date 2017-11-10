@@ -219,7 +219,10 @@ experiment('projects', () => {
   test('Get all projects GET /api/projects', () => {
     return server.inject({
       method: 'GET',
-      url: '/api/projects/'
+      url: '/api/projects',
+      headers: {
+        'Authorization': userToken
+      }
     }).then((response) => {
       expect(response.statusCode).to.equal(200);
       expect(response.result.allProjects).to.be.an.array();
