@@ -41,7 +41,7 @@ experiment('projects', () => {
       user.admin = true;
 
       Bcrypt.genSalt(10, (error, salt) => {
-        Bcrypt.hash(password, salt, (error, hash) => {
+        Bcrypt.hash('testpassword', salt, (error, hash) => {
           user.password = hash;
           user.save().then(() => {
             resolve();
