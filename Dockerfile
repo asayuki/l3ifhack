@@ -13,5 +13,5 @@ RUN apk --no-cache add --virtual native-deps \
   apk del native-deps
 
 COPY ./src /app
-
+EXPOSE 8000
 CMD ["node", "server.js"]
