@@ -91,49 +91,7 @@ exports.register = (server, options, next) => {
         }
       }
     },
-
-    {
-      method: 'PUT',
-      path: '/api/projects/{id}/upvote',
-      config: {
-        validate: {
-          params: getSchema
-        },
-        handler: (request, response) => {
-          Project.findByIdAndUpdate(request.params.id, {$inc: {
-            votes: 1
-          }}, {new: true}).then((updatedProject) => {
-            return response({
-              voted: true
-            }).code(200);
-          }, (error) => {
-            return response(notFound('Could not find project'));
-          });
-        }
-      }
-    },
-
-    {
-      method: 'PUT',
-      path: '/api/projects/{id}/downvote',
-      config: {
-        validate: {
-          params: getSchema
-        },
-        handler: (request, response) => {
-          Project.findByIdAndUpdate(request.params.id, {$inc: {
-            votes: -1
-          }}, {new: true}).then((updatedProject) => {
-            return response({
-              voted: true
-            }).code(200);
-          }, (error) => {
-            return response(notFound('Could not find project'));
-          });
-        }
-      }
-    },
-
+    
     {
       method: 'POST',
       path: '/api/projects/{id}/join',

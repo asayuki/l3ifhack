@@ -20,15 +20,11 @@ const db = Mongoose.connect(process.env.MONGO_URL, {
 const Project = require('../api/projects/model');
 const User = server.plugins['hapi-users-plugin'].Usermodel;
 
-// ADD BCRYT AND STUFF
-
 // Clear collections before testing
 Project.remove({}).then();
 User.remove({}).then();
 
-/**
- * Write tests here
- */
+// Tests
 experiment('projects', () => {
   let projectId = null;
   let joineeId = null;
@@ -74,6 +70,9 @@ experiment('projects', () => {
         title: 'My project',
         text: 'My project text',
         author: 'testauthor'
+      },
+      headers: {
+        'Authorization': userToken
       }
     }).then((response) => {
       expect(response.statusCode).to.equal(201);
@@ -92,6 +91,9 @@ experiment('projects', () => {
         title: '',
         text: 'text',
         author: 'author'
+      },
+      headers: {
+        'Authorization': userToken
       }
     }).then((response) => {
       expect(response.statusCode).to.equal(400);
@@ -106,6 +108,9 @@ experiment('projects', () => {
         title: '',
         text: '',
         author: ''
+      },
+      headers: {
+        'Authorization': userToken
       }
     }).then((response) => {
       expect(response.statusCode).to.equal(400);
@@ -120,30 +125,13 @@ experiment('projects', () => {
         title: 'My project',
         text: 'My project text',
         author: 'testauthor'
+      },
+      headers: {
+        'Authorization': userToken
       }
     }).then((response) => {
       expect(response.statusCode).to.equal(409);
     })
-  });
-
-  test('Upvote project PUT /api/projects/{id}/upvote', () => {
-    return server.inject({
-      method: 'PUT',
-      url: '/api/projects/' + projectId + '/upvote'
-    }).then((response) => {
-      expect(response.statusCode).to.equal(200);
-      expect(response.result.voted).to.be.true();
-    });
-  });
-
-  test('Downvote project PUT /api/projects/{id}/downvote', () => {
-    return server.inject({
-      method: 'PUT',
-      url: '/api/projects/' + projectId + '/downvote'
-    }).then((response) => {
-      expect(response.statusCode).to.equal(200);
-      expect(response.result.voted).to.be.true();
-    });
   });
 
   test('Join project POST /api/projects/{id}/join', () => {
@@ -152,6 +140,9 @@ experiment('projects', () => {
       url: '/api/projects/' + projectId + '/join',
       payload: {
         joinee: 'Testia Testus'
+      },
+      headers: {
+        'Authorization': userToken
       }
     }).then((response) => {
       expect(response.statusCode).to.equal(200);
@@ -166,7 +157,10 @@ experiment('projects', () => {
   test('Dejoin a joinee from a project DELETE /api/projects/{id}/joinee/{joinee}', () => {
     return server.inject({
       method: 'DELETE',
-      url: '/api/projects/' + projectId + '/joinee/' + joineeId
+      url: '/api/projects/' + projectId + '/joinee/' + joineeId,
+      headers: {
+        'Authorization': userToken
+      }
     }).then((response) => {
       expect(response.statusCode).to.equal(200);
       expect(response.result.joineeRemoved).to.be.true();
@@ -176,7 +170,10 @@ experiment('projects', () => {
   test('Get project GET /api/projects/{id}', () => {
     return server.inject({
       method: 'GET',
-      url: '/api/projects/' + projectId
+      url: '/api/projects/' + projectId,
+      headers: {
+        'Authorization': userToken
+      }
     }).then((response) => {
       expect(response.statusCode).to.equal(200);
       expect(response.result.project).to.be.an.object();
@@ -194,6 +191,9 @@ experiment('projects', () => {
         title: 'My edited project',
         text: 'My edited project text',
         author: 'Edited testauthor'
+      },
+      headers: {
+        'Authorization': userToken
       }
     }).then((response) => {
       expect(response.statusCode).to.equal(200);
@@ -210,6 +210,9 @@ experiment('projects', () => {
       url: '/api/projects/' + projectId + '/edit',
       payload: {
         title: '',
+      },
+      headers: {
+        'Authorization': userToken
       }
     }).then((response) => {
       expect(response.statusCode).to.equal(400);
@@ -232,7 +235,10 @@ experiment('projects', () => {
   test('Remove project DELETE /api/projects/{id}', () => {
     return server.inject({
       method: 'DELETE',
-      url: '/api/projects/' + projectId
+      url: '/api/projects/' + projectId,
+      headers: {
+        'Authorization': userToken
+      }
     }).then((response) => {
       expect(response.statusCode).to.equal(200);
       expect(response.result.removed).to.be.true();
