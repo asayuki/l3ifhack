@@ -19,10 +19,6 @@ const project = new Schema({
     type: String,
     required: true
   },
-  votes: {
-    type: Number,
-    default: 0
-  },
   joinees: [{
     name: {
       type: String,
