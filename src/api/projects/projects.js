@@ -1,18 +1,22 @@
 'use strict';
 
-const { createSchema, getSchema, deleteSchema } = require('./schema.js');
-const { badImplementation, notFound, conflict, joinSchema } = require('boom');
+const { createSchema, updateSchema, getSchema, deleteSchema, joinSchema, deleteJoineeSchema } = require('./schema.js');
+const { badImplementation, notFound, conflict } = require('boom');
 
 const Project = require('./model');
 
 exports.register = (server, options, next) => {
   server.route([
+    // Create project
     {
       method: 'POST',
       path: '/api/projects',
       config: {
         validate: {
           payload: createSchema
+        },
+        auth: {
+          strategy: 'jwt'
         },
         handler: (request, response) => {
           let project = new Project();
@@ -33,12 +37,16 @@ exports.register = (server, options, next) => {
       }
     },
 
+    // Get project
     {
       method: 'GET',
       path: '/api/projects/{id}',
       config: {
         validate: {
           params: getSchema
+        },
+        auth: {
+          strategy: 'jwt'
         },
         handler: (request, response) => {
           Project.findById(request.params.id).then((project) => {
@@ -50,6 +58,7 @@ exports.register = (server, options, next) => {
       }
     },
 
+    // Get projects
     {
       method: 'GET',
       path: '/api/projects',
@@ -67,16 +76,19 @@ exports.register = (server, options, next) => {
       }
     },
 
+    // Update project
     {
       method: 'PUT',
-      path: '/api/projects/{id}/edit',
+      path: '/api/projects',
       config: {
         validate: {
-          params: getSchema,
-          payload: createSchema
+          payload: updateSchema
+        },
+        auth: {
+          strategy: 'jwt'
         },
         handler: (request, response) => {
-          Project.findByIdAndUpdate(request.params.id, {$set: {
+          Project.findByIdAndUpdate(request.payload.id, {$set: {
             title: request.payload.title,
             text: request.payload.text,
             author: request.payload.author
@@ -91,16 +103,43 @@ exports.register = (server, options, next) => {
         }
       }
     },
-    
+
+    // Delete project
     {
-      method: 'POST',
-      path: '/api/projects/{id}/join',
+      method: 'DELETE',
+      path: '/api/projects',
       config: {
         validate: {
-          params: joinSchema
+          payload: deleteSchema
+        },
+        auth: {
+          strategy: 'jwt'
         },
         handler: (request, response) => {
-          Project.findByIdAndUpdate(request.params.id, {$addToSet: {
+          Project.findByIdAndRemove(request.params.id).then((status) => {
+            return response({
+              removed: true
+            }).code(200);
+          }, (error) => {
+            return response(notFound('Could not find project'));
+          });
+        }
+      }
+    },
+
+    // Join project
+    {
+      method: 'POST',
+      path: '/api/projects/join',
+      config: {
+        validate: {
+          payload: joinSchema
+        },
+        auth: {
+          strategy: 'jwt'
+        },
+        handler: (request, response) => {
+          Project.findByIdAndUpdate(request.payload.id, {$addToSet: {
             joinees: {
               name: request.payload.joinee
             }
@@ -115,36 +154,21 @@ exports.register = (server, options, next) => {
       }
     },
 
+    // Remove joinee from project
     {
       method: 'DELETE',
-      path: '/api/projects/{id}',
+      path: '/api/projects/joinee',
       config: {
         validate: {
-          params: getSchema
+          payload: deleteJoineeSchema
+        },
+        auth: {
+          strategy: 'jwt'
         },
         handler: (request, response) => {
-          Project.findByIdAndRemove(request.params.id).then((status) => {
-            return response({
-              removed: true
-            }).code(200);
-          }, (error) => {
-            return response(notFound('Could not find project'));
-          });
-        }
-      }
-    },
-
-    {
-      method: 'DELETE',
-      path: '/api/projects/{id}/joinee/{joinee}',
-      config: {
-        validate: {
-          params: joinSchema
-        },
-        handler: (request, response) => {
-          Project.findByIdAndUpdate(request.params.id, {$pull: {
+          Project.findByIdAndUpdate(request.payload.id, {$pull: {
             joinees: {
-              _id: request.params.joinee
+              _id: request.payload.joinee
             }
           }}, {new: true}).then((updatedProject) => {
             return response({

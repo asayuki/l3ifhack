@@ -3,7 +3,7 @@
 process.env.PORT = 8001;
 process.env.LOGGING = false;
 process.env.MONGO_URL = 'mongodb://mongo/l3ifhacktest';
-process.env.REDISCLOUD_URL = process.env.REDISCLOUD_URL || 'http://redis:6379';
+process.env.REDIS = 'redis://redis:6379';
 
 const server = require('../server.js');
 const { expect, fail } = require('code');
@@ -134,11 +134,12 @@ experiment('projects', () => {
     })
   });
 
-  test('Join project POST /api/projects/{id}/join', () => {
+  test('Join project POST /api/projects/join', () => {
     return server.inject({
       method: 'POST',
-      url: '/api/projects/' + projectId + '/join',
+      url: '/api/projects/join',
       payload: {
+        id: projectId,
         joinee: 'Testia Testus'
       },
       headers: {
@@ -154,10 +155,14 @@ experiment('projects', () => {
     });
   });
 
-  test('Dejoin a joinee from a project DELETE /api/projects/{id}/joinee/{joinee}', () => {
+  test('Dejoin a joinee from a project DELETE /api/projects/joinee', () => {
     return server.inject({
       method: 'DELETE',
-      url: '/api/projects/' + projectId + '/joinee/' + joineeId,
+      url: '/api/projects/joinee',
+      payload: {
+        id: projectId,
+        joinee: joineeId
+      },
       headers: {
         'Authorization': userToken
       }
@@ -179,15 +184,15 @@ experiment('projects', () => {
       expect(response.result.project).to.be.an.object();
       expect(response.result.project.title).to.equal('My project');
       expect(response.result.project.joinees).to.be.empty();
-      expect(response.result.project.votes).to.be.equal(0);
     });
   });
 
-  test('Edit project PUT /api/projects/{id}/edit', () => {
+  test('Edit project PUT /api/projects', () => {
     return server.inject({
       method: 'PUT',
-      url: '/api/projects/' + projectId + '/edit',
+      url: '/api/projects',
       payload: {
+        id: projectId,
         title: 'My edited project',
         text: 'My edited project text',
         author: 'Edited testauthor'
@@ -204,11 +209,12 @@ experiment('projects', () => {
     });
   });
 
-  test('Edit a project PUT with invalid title data /api/projects/{id}/edit', () => {
+  test('Edit a project PUT with invalid title data /api/projects', () => {
     return server.inject({
       method: 'PUT',
-      url: '/api/projects/' + projectId + '/edit',
+      url: '/api/projects',
       payload: {
+        id: projectId,
         title: '',
       },
       headers: {
@@ -217,7 +223,23 @@ experiment('projects', () => {
     }).then((response) => {
       expect(response.statusCode).to.equal(400);
     });
-  })
+  });
+
+  test('Edit a project PUT with invalid id', () => {
+    return server.inject({
+      method: 'PUT',
+      url: '/api/projects',
+      payload: {
+        id: 'invalid id',
+        title: '',
+      },
+      headers: {
+        'Authorization': userToken
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(400);
+    });
+  });
 
   test('Get all projects GET /api/projects', () => {
     return server.inject({
@@ -232,10 +254,13 @@ experiment('projects', () => {
     });
   });
 
-  test('Remove project DELETE /api/projects/{id}', () => {
+  test('Remove project DELETE /api/projects', () => {
     return server.inject({
       method: 'DELETE',
-      url: '/api/projects/' + projectId,
+      url: '/api/projects',
+      payload: {
+        id: projectId
+      },
       headers: {
         'Authorization': userToken
       }
