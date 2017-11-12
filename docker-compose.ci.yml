@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  ci:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      - REDIS=redis://redis:6379
+      - MONGO_URL=mongodb://mongo/l3ifhackci
+    command: node ./node_modules/.bin/lab
+  mongo:
+    image: mvertes/alpine-mongo
+  redis:
+    image: redis:4-alpine
