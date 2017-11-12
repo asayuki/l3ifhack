@@ -1,6 +1,7 @@
 'use strict';
 
 const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 
 const createSchema = Joi.object({
   title: Joi.string().required(),
@@ -9,28 +10,28 @@ const createSchema = Joi.object({
 });
 
 const updateSchema = Joi.object({
-  id: Joi.string().required(),
+  id: Joi.objectId().required(),
   title: Joi.string().required(),
   text: Joi.string().required(),
   author: Joi.string().required()
 });
 
 const getSchema = Joi.object({
-  id: Joi.string().required()
+  id: Joi.objectId().required()
 });
 
 const deleteSchema = Joi.object({
-  id: Joi.string().required()
+  id: Joi.objectId().required()
 });
 
 const joinSchema = Joi.object({
-  id: Joi.string().required(),
+  id: Joi.objectId().required(),
   joinee: Joi.string().required()
 })
 
 const deleteJoineeSchema = Joi.object({
-  id: Joi.string().required(),
-  joinee: Joi.string().required()
+  id: Joi.objectId().required(),
+  joinee: Joi.objectId().required()
 });
 
 module.exports = {

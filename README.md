@@ -26,8 +26,7 @@ or
 * `HASH_SALT` - For hashing passowrd
 * `TOKEN_SECRET` - For JWT sign
 
-Create a docker-compose.yml.
-For production:
+Example of a docker-compose.yml for production:
 ```
 version: '3'
 
@@ -58,45 +57,6 @@ volumes:
   redisdata:
 ```
 
-For development:
-```
-version: '3'
-
-services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    ports:
-      - 8000:8000
-    volumes:
-      - ./src:/app
-      - /app/node_modules                 # So we get rid of node_modules locally
-      - ./package.json:/app/package.json
-    depends_on:
-      - mongo
-      - redis
-    environment:
-      - LOGGING=true
-      - MONGO_URL=mongodb://mongo/l3ifhack
-      - REDIS=redis://redis:6379
-      - HASH_SALT=HashForSalt
-      - TOKEN_SECRET=TokenHashForJWT
-    command: node ./node_modules/.bin/nodemon --legacy-watch --watch server.js --watch api server.js
-  mongo:
-    image: mvertes/alpine-mongo
-    volumes:
-      - mongodata:/data/db
-  redis:
-    image: redis:4-alpine
-    volumes:
-      - redisdata:/data
-
-volumes:
-  mongodata:
-  redisdata:
-```
-
 ### Start server
 
 `docker-compose up`
@@ -106,3 +66,38 @@ volumes:
 While server is up and running, use the following:
 
 `docker-compose exec web node_modules/.bin/lab`
+
+## Endpoints
+
+All endpoints require that the user is logged in.
+
+For users api, look up [hapi-users-plugin](http://github.com/asayuki/hapi-users-plugin)
+
+* `POST /api/projects`
+    * Default payload
+        * `title` - Joi.string().required()
+        * `text` - Joi.string().required()
+        * `author` - Joi.string().required()
+* `PUT /api/projects`
+    * Default payload
+        * `id` - Joi.objectId().required()
+        * `title` - Joi.string().required()
+        * `text` - Joi.string().required()
+        * `author` - Joi.string().required()
+* `DELETE /api/projects`
+    * Default payload
+        * `id` - Joi.objectId().required()
+* `GET /api/projects`
+    * Default response
+        * Array with all projects
+* `GET /api/projects/{id}` (might change, or that title may also be supported)
+    * Default response
+        * Object with project
+* `POST /api/projects/join`
+    * Default payload
+        * `id` - Joi.objectId().required()
+        * `joinee` - Joi.string().required()
+* `DELETE /api/projects/joinee`
+    * Default payload
+        * `id` Joi.objectId().required()
+        * `joinee` - Joi.objectId().required()
