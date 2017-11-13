@@ -78,26 +78,19 @@ For users api, look up [hapi-users-plugin](http://github.com/asayuki/hapi-users-
         * `title` - Joi.string().required()
         * `text` - Joi.string().required()
         * `author` - Joi.string().required()
-* `PUT /api/projects`
+* `PUT /api/projects/{id}`
     * Default payload
-        * `id` - Joi.objectId().required()
         * `title` - Joi.string().required()
         * `text` - Joi.string().required()
         * `author` - Joi.string().required()
-* `DELETE /api/projects`
-    * Default payload
-        * `id` - Joi.objectId().required()
+* `DELETE /api/projects/{id}`
 * `GET /api/projects`
     * Default response
         * Array with all projects
 * `GET /api/projects/{id}` (might change, or that title may also be supported)
     * Default response
         * Object with project
-* `POST /api/projects/join`
+* `POST /api/projects/{id}/join`
     * Default payload
-        * `id` - Joi.objectId().required()
         * `joinee` - Joi.string().required()
-* `DELETE /api/projects/joinee`
-    * Default payload
-        * `id` Joi.objectId().required()
-        * `joinee` - Joi.objectId().required()
+* `DELETE /api/projects/{id}/joinee/{joineeId}`

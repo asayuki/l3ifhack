@@ -1,6 +1,6 @@
 'use strict';
 
-const { createSchema, updateSchema, getSchema, deleteSchema, joinSchema, deleteJoineeSchema } = require('./schema.js');
+const { createSchema, updateSchema, getSchema, deleteSchema, joinSchema, deleteJoineeSchema } = require('./schemas.js');
 const { badImplementation, notFound, conflict } = require('boom');
 
 const Project = require('./model');
