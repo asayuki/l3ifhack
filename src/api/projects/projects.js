@@ -79,16 +79,17 @@ exports.register = (server, options, next) => {
     // Update project
     {
       method: 'PUT',
-      path: '/api/projects',
+      path: '/api/projects/{id}',
       config: {
         validate: {
+          params: getSchema,
           payload: updateSchema
         },
         auth: {
           strategy: 'jwt'
         },
         handler: (request, response) => {
-          Project.findByIdAndUpdate(request.payload.id, {$set: {
+          Project.findByIdAndUpdate(request.params.id, {$set: {
             title: request.payload.title,
             text: request.payload.text,
             author: request.payload.author
@@ -107,10 +108,10 @@ exports.register = (server, options, next) => {
     // Delete project
     {
       method: 'DELETE',
-      path: '/api/projects',
+      path: '/api/projects/{id}',
       config: {
         validate: {
-          payload: deleteSchema
+          params: deleteSchema
         },
         auth: {
           strategy: 'jwt'
@@ -130,16 +131,17 @@ exports.register = (server, options, next) => {
     // Join project
     {
       method: 'POST',
-      path: '/api/projects/join',
+      path: '/api/projects/{id}/join',
       config: {
         validate: {
+          params: getSchema,
           payload: joinSchema
         },
         auth: {
           strategy: 'jwt'
         },
         handler: (request, response) => {
-          Project.findByIdAndUpdate(request.payload.id, {$addToSet: {
+          Project.findByIdAndUpdate(request.params.id, {$addToSet: {
             joinees: {
               name: request.payload.joinee
             }
@@ -157,18 +159,18 @@ exports.register = (server, options, next) => {
     // Remove joinee from project
     {
       method: 'DELETE',
-      path: '/api/projects/joinee',
+      path: '/api/projects/{id}/joinee/{joinee}',
       config: {
         validate: {
-          payload: deleteJoineeSchema
+          params: deleteJoineeSchema
         },
         auth: {
           strategy: 'jwt'
         },
         handler: (request, response) => {
-          Project.findByIdAndUpdate(request.payload.id, {$pull: {
+          Project.findByIdAndUpdate(request.params.id, {$pull: {
             joinees: {
-              _id: request.payload.joinee
+              _id: request.params.joinee
             }
           }}, {new: true}).then((updatedProject) => {
             return response({

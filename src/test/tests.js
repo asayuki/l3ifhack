@@ -24,12 +24,12 @@ const User = server.plugins['hapi-users-plugin'].Usermodel;
 Project.remove({}).then();
 User.remove({}).then();
 
-// Tests
-experiment('projects', () => {
-  let projectId = null;
-  let joineeId = null;
-  let userToken = null;
+// Some variables we can ser later
+let projectId = null;
+let joineeId = null;
+let userToken = null;
 
+experiment('Users', () => {
   before (() => {
     return new Promise((resolve) => {
       let user = new User();
@@ -48,20 +48,22 @@ experiment('projects', () => {
   });
 
   test('Login user', () => {
-      return server.inject({
-          method: 'POST',
-          url: '/api/users/authenticate',
-          payload: {
-              username: 'testuser',
-              password: 'testpassword'
-          }
-      }).then((response) => {
-          expect(response.statusCode).to.equal(200);
-          expect(response.headers.authorization).to.be.a.string();
-          userToken = response.headers.authorization;
-      });
+    return server.inject({
+        method: 'POST',
+        url: '/api/users/authenticate',
+        payload: {
+            username: 'testuser',
+            password: 'testpassword'
+        }
+    }).then((response) => {
+        expect(response.statusCode).to.equal(200);
+        expect(response.headers.authorization).to.be.a.string();
+        userToken = response.headers.authorization;
+    });
   });
+});
 
+experiment('Create project(s)', () => {
   test('Create project POST /api/projects', () => {
     return server.inject({
       method: 'POST',
@@ -133,13 +135,14 @@ experiment('projects', () => {
       expect(response.statusCode).to.equal(409);
     })
   });
+});
 
-  test('Join project POST /api/projects/join', () => {
+experiment('Join / Dejoin from project', () => {
+  test('Join project POST /api/projects/{id}/join', () => {
     return server.inject({
       method: 'POST',
-      url: '/api/projects/join',
+      url: '/api/projects/' + projectId + '/join',
       payload: {
-        id: projectId,
         joinee: 'Testia Testus'
       },
       headers: {
@@ -155,14 +158,10 @@ experiment('projects', () => {
     });
   });
 
-  test('Dejoin a joinee from a project DELETE /api/projects/joinee', () => {
+  test('Dejoin a joinee from a project DELETE /api/projects/{projectId}/joinee/{joineeId}', () => {
     return server.inject({
       method: 'DELETE',
-      url: '/api/projects/joinee',
-      payload: {
-        id: projectId,
-        joinee: joineeId
-      },
+      url: '/api/projects/' +  projectId + '/joinee/' + joineeId,
       headers: {
         'Authorization': userToken
       }
@@ -171,7 +170,9 @@ experiment('projects', () => {
       expect(response.result.joineeRemoved).to.be.true();
     });
   });
+})
 
+experiment('Get project(s)', () => {
   test('Get project GET /api/projects/{id}', () => {
     return server.inject({
       method: 'GET',
@@ -187,12 +188,26 @@ experiment('projects', () => {
     });
   });
 
+  test('Get all projects GET /api/projects', () => {
+    return server.inject({
+      method: 'GET',
+      url: '/api/projects',
+      headers: {
+        'Authorization': userToken
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.allProjects).to.be.an.array();
+    });
+  });
+});
+
+experiment('Edit project(s)', () => {
   test('Edit project PUT /api/projects', () => {
     return server.inject({
       method: 'PUT',
-      url: '/api/projects',
+      url: '/api/projects/' +  projectId,
       payload: {
-        id: projectId,
         title: 'My edited project',
         text: 'My edited project text',
         author: 'Edited testauthor'
@@ -212,10 +227,9 @@ experiment('projects', () => {
   test('Edit a project PUT with invalid title data /api/projects', () => {
     return server.inject({
       method: 'PUT',
-      url: '/api/projects',
+      url: '/api/projects/' +  projectId,
       payload: {
-        id: projectId,
-        title: '',
+        title: ''
       },
       headers: {
         'Authorization': userToken
@@ -228,10 +242,9 @@ experiment('projects', () => {
   test('Edit a project PUT with invalid id', () => {
     return server.inject({
       method: 'PUT',
-      url: '/api/projects',
+      url: '/api/projects/invalidid',
       payload: {
-        id: 'invalid id',
-        title: '',
+        title: ''
       },
       headers: {
         'Authorization': userToken
@@ -240,27 +253,13 @@ experiment('projects', () => {
       expect(response.statusCode).to.equal(400);
     });
   });
+});
 
-  test('Get all projects GET /api/projects', () => {
-    return server.inject({
-      method: 'GET',
-      url: '/api/projects',
-      headers: {
-        'Authorization': userToken
-      }
-    }).then((response) => {
-      expect(response.statusCode).to.equal(200);
-      expect(response.result.allProjects).to.be.an.array();
-    });
-  });
-
-  test('Remove project DELETE /api/projects', () => {
+experiment('Remove project(s)', () => {
+  test('Remove project DELETE /api/projects/{id}', () => {
     return server.inject({
       method: 'DELETE',
-      url: '/api/projects',
-      payload: {
-        id: projectId
-      },
+      url: '/api/projects/' +  projectId,
       headers: {
         'Authorization': userToken
       }

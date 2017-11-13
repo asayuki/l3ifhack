@@ -9,6 +9,17 @@ Server.connection({
     port: process.env.PORT || '8000'
 });
 
+Server.route({
+    method: 'GET',
+    path: '/',
+    handler: (request, response) => {
+        return response({
+            l3ifhack: true,
+            version: '1.0.0'
+        });
+    }
+});
+
 Server.register([
     require('hapi-auth-jwt2'),
     require('hapi-users-plugin'),

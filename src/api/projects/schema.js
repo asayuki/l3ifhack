@@ -10,7 +10,6 @@ const createSchema = Joi.object({
 });
 
 const updateSchema = Joi.object({
-  id: Joi.objectId().required(),
   title: Joi.string().required(),
   text: Joi.string().required(),
   author: Joi.string().required()
@@ -25,7 +24,6 @@ const deleteSchema = Joi.object({
 });
 
 const joinSchema = Joi.object({
-  id: Joi.objectId().required(),
   joinee: Joi.string().required()
 })
 
