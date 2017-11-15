@@ -156,6 +156,31 @@ exports.register = (server, options, next) => {
       }
     },
 
+    // Upvote project
+    {
+      method: 'POST',
+      path: '/api/projects/{id}/upvote',
+      config: {
+        validate: {
+          params: getSchema
+        },
+        auth: {
+          strategy: 'jwt'
+        },
+        handler: (request, response) => {
+          Project.findByIdAndUpdate(request.params.id, {$inc: {
+            upvotes: 1
+          }}).then(() => {
+            return response({
+              upvoted: true
+            }).code(200);
+          }, (error) => {
+            return response(badImplementation('Could not upvote the project'));
+          });
+        }
+      }
+    },
+
     // Remove joinee from project
     {
       method: 'DELETE',

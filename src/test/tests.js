@@ -255,6 +255,21 @@ experiment('Edit project(s)', () => {
   });
 });
 
+experiment('Update project(s)', () => {
+  test('Upvote project POST /api/projects/{id}/upvote', () => {
+    return server.inject({
+      method: 'POST',
+      url: '/api/projects/' +  projectId + '/upvote',
+      headers: {
+        'Authorization': userToken
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.upvoted).to.be.true();
+    });
+  });
+});
+
 experiment('Remove project(s)', () => {
   test('Remove project DELETE /api/projects/{id}', () => {
     return server.inject({
