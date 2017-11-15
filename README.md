@@ -90,6 +90,7 @@ For users api, look up [hapi-users-plugin](http://github.com/asayuki/hapi-users-
 * `GET /api/projects/{id}` (might change, or that title may also be supported)
     * Default response
         * Object with project
+* `POST /api/projects/{id}/upvote`
 * `POST /api/projects/{id}/join`
     * Default payload
         * `joinee` - Joi.string().required()
