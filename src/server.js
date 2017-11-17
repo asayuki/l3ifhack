@@ -45,7 +45,7 @@ Server.register([
     });
 });
 
-if (process.env.LOGGING === true) {
+if (process.env.LOGGING == 'true') {
     Server.on('response', (request) => {
         console.log(`${request.info.remoteAddress}: ${request.method.toUpperCase()} ${request.url.path} --> ${request.response.statusCode}`);
     });
