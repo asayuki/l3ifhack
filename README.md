@@ -32,7 +32,7 @@ version: '3'
 
 services:
   web:
-    image: l3ifhack
+    image: neme/l3ifhack
     ports:
       - 8000:8000
     depends_on:
