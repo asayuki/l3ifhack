@@ -6,7 +6,12 @@ const Mongoose = require('mongoose');
 
 Server.connection({
     host: process.env.HOST || '0.0.0.0',
-    port: process.env.PORT || '8000'
+    port: process.env.PORT || '8000',
+    routes: {
+        cors: {
+          origin: ['*']
+        }
+    }
 });
 
 Server.route({
@@ -15,7 +20,7 @@ Server.route({
     handler: (request, response) => {
         return response({
             l3ifhack: true,
-            version: '1.0.0'
+            version: '1.0.1'
         });
     }
 });
