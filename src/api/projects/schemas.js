@@ -23,6 +23,11 @@ const deleteSchema = Joi.object({
   id: Joi.objectId().required()
 });
 
+const commentSchema = Joi.object({
+  name: Joi.string().required(),
+  comment: Joi.string().required()
+});
+
 const joinSchema = Joi.object({
   joinee: Joi.string().required()
 })

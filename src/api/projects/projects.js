@@ -67,7 +67,67 @@ exports.register = (server, options, next) => {
           strategy: 'jwt'
         },
         handler: (request, response) => {
-          Project.find().then((allProjects) => {
+
+          /*Project.aggregate([
+            {
+              $unwind: '$comments',
+            },
+            {
+              $group: {
+                _id: '$_id',
+                numComments: {
+                  $sum: {
+                    $size: '$comments'
+                  }
+                }
+              }
+            }
+          ]).then((allProjects) => {
+            return response({allProjects: allProjects}).code(200);
+          }, (error) => {
+            return response(notFound('No projects found'));
+          });*/
+
+
+          /*Project.find().then((allProjects) => {
+            return response({allProjects: allProjects}).code(200);
+          }, (error) => {
+            return response(notFound('No projects found'));
+          });*/
+          //aggregate([{$match:{"profileID":"123456789"}}, {$unwind:"$myArray"}, {$match:{"myArray.read":false}}, {$count:"unread_mail"}])
+          /*Project.aggregate([
+            {
+              $project: {
+                comments: 1
+              }
+            },
+            {
+              $unwind: '$comments'
+            },
+            {
+              $group: {
+                _id: "result",
+                count: { $sum: 1 }
+              }
+            }
+          ]).then((allProjects) => {
+            console.log(allProjects);
+            return response({allProjects: allProjects}).code(200);
+          }, (error) => {
+            return response(notFound('No projects found'));
+          });*/
+
+          Project.aggregate({
+            $group: {
+              _id: "$_id",
+              numComments: {
+                $sum: {
+                  $size: '$comments'
+                }
+              }
+            }
+          }).then((allProjects) => {
+            console.log(allProjects);
             return response({allProjects: allProjects}).code(200);
           }, (error) => {
             return response(notFound('No projects found'));

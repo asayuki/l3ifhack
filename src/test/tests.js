@@ -28,6 +28,7 @@ User.remove({}).then();
 let projectId = null;
 let joineeId = null;
 let userToken = null;
+let commentId = null;
 
 experiment('Users', () => {
   before (() => {
@@ -259,13 +260,103 @@ experiment('Update project(s)', () => {
   test('Upvote project POST /api/projects/{id}/upvote', () => {
     return server.inject({
       method: 'POST',
-      url: '/api/projects/' +  projectId + '/upvote',
+      url: '/api/projects/' + projectId + '/upvote',
       headers: {
         'Authorization': userToken
       }
     }).then((response) => {
       expect(response.statusCode).to.equal(200);
       expect(response.result.upvoted).to.be.true();
+    });
+  });
+});
+
+experiment('Comment on project', () => {
+  test('Comment on project with invalid project id', () => {
+    return server.inject({
+      method: 'POST',
+      url: '/api/projects/invalidid/comment',
+      headers: {
+        'Authorization': userToken
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(400);
+    });
+  });
+
+  test('Comment on project with empty payload POST /api/projects/{id}/comment', () => {
+    return server.inject({
+      method: 'POST',
+      url: '/api/projects/' + projectID + '/comment',
+      headers: {
+        'Authorization': userToken
+      },
+      payload: {
+        'name': '',
+        'comment': ''
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(400);
+    });
+  });
+
+  test('Comment on project POST /api/projects/{id}/comment', () => {
+    return server.inject({
+      method: 'POST',
+      url: '/api/projects/' + projectID + '/comment',
+      headers: {
+        'Authorization': userToken
+      },
+      payload: {
+        'name': 'MyName',
+        'comment': 'My comment'
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.commented).to.be.true();
+
+      commentId = response.result.commentId;
+    });
+  });
+
+  test('Listing projects should show 1 comment on 1 project', () => {
+    return server.inject({
+      method: 'GET',
+      url: '/api/projects',
+      headers: {
+        'Authorization': userToken
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.allProjects[0].numComments).to.equal(1);
+    });
+  });
+
+  test('Fetching project should show 1 comment', () => {
+    return server.inject({
+      method: 'GET',
+      url: '/api/projects/' + projectId,
+      headers: {
+        'Authorization': userToken
+      }
+    }).then((response) => {
+      console.log(response.result);
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.project.comments).to.be.an.array();
+      expect(response.result.project.comments[0].name).to.equal('MyName');
+    });
+  });
+
+  test('Remove comment on project DELETE /api/projects/{id}/comment/{commentId}', () => {
+    return server.inject({
+      method: 'DELETE',
+      url: '/api/projects/' +  projectId + '/comment/' + commentId,
+      headers: {
+        'Authorization': userToken
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.removed).to.be.true();
     });
   });
 });

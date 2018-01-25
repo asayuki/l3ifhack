@@ -1,6 +1,6 @@
 {
   "name": "l3ifhack",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "boom": "^6.0.0",
     "hapi": "^16.6.2",
     "hapi-auth-jwt2": "^7.3.0",
-    "hapi-users-plugin": "^2.0.3",
+    "hapi-users-plugin": "^2.0.4",
     "joi": "^13.0.1",
     "joi-objectid": "^2.0.0",
     "mongoose": "^4.12.5"

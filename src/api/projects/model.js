@@ -23,6 +23,16 @@ const project = new Schema({
     type: Number,
     default: 0
   },
+  comments: [{
+    name: {
+      type: String,
+      required: true
+    },
+    comment: {
+      type: String,
+      required: true
+    }
+  }],
   joinees: [{
     name: {
       type: String,
