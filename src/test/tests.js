@@ -287,7 +287,7 @@ experiment('Comment on project', () => {
   test('Comment on project with empty payload POST /api/projects/{id}/comment', () => {
     return server.inject({
       method: 'POST',
-      url: '/api/projects/' + projectID + '/comment',
+      url: '/api/projects/' + projectId + '/comment',
       headers: {
         'Authorization': userToken
       },
@@ -303,7 +303,7 @@ experiment('Comment on project', () => {
   test('Comment on project POST /api/projects/{id}/comment', () => {
     return server.inject({
       method: 'POST',
-      url: '/api/projects/' + projectID + '/comment',
+      url: '/api/projects/' + projectId + '/comment',
       headers: {
         'Authorization': userToken
       },
@@ -313,9 +313,8 @@ experiment('Comment on project', () => {
       }
     }).then((response) => {
       expect(response.statusCode).to.equal(200);
-      expect(response.result.commented).to.be.true();
 
-      commentId = response.result.commentId;
+      commentId = response.result.project.comments[0]._id;
     });
   });
 
@@ -340,7 +339,6 @@ experiment('Comment on project', () => {
         'Authorization': userToken
       }
     }).then((response) => {
-      console.log(response.result);
       expect(response.statusCode).to.equal(200);
       expect(response.result.project.comments).to.be.an.array();
       expect(response.result.project.comments[0].name).to.equal('MyName');
@@ -356,7 +354,20 @@ experiment('Comment on project', () => {
       }
     }).then((response) => {
       expect(response.statusCode).to.equal(200);
-      expect(response.result.removed).to.be.true();
+      expect(response.result.commentRemoved).to.be.true();
+    });
+  });
+
+  test('Fetching project should show 0 comments', () => {
+    return server.inject({
+      method: 'GET',
+      url: '/api/projects/' + projectId,
+      headers: {
+        'Authorization': userToken
+      }
+    }).then((response) => {
+      expect(response.statusCode).to.equal(200);
+      expect(response.result.project.comments).to.be.empty()
     });
   });
 });

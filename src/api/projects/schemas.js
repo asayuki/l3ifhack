@@ -37,11 +37,18 @@ const deleteJoineeSchema = Joi.object({
   joinee: Joi.objectId().required()
 });
 
+const deleteCommentSchema = Joi.object({
+  id: Joi.objectId().required(),
+  commentId: Joi.objectId().required()
+});
+
 module.exports = {
   createSchema,
   updateSchema,
   getSchema,
   deleteSchema,
   joinSchema,
-  deleteJoineeSchema
+  deleteJoineeSchema,
+  commentSchema,
+  deleteCommentSchema
 };

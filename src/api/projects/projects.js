@@ -1,6 +1,6 @@
 'use strict';
 
-const { createSchema, updateSchema, getSchema, deleteSchema, joinSchema, deleteJoineeSchema } = require('./schemas.js');
+const { createSchema, updateSchema, getSchema, deleteSchema, joinSchema, deleteJoineeSchema, commentSchema, deleteCommentSchema } = require('./schemas.js');
 const { badImplementation, notFound, conflict } = require('boom');
 
 const Project = require('./model');
@@ -67,14 +67,19 @@ exports.register = (server, options, next) => {
           strategy: 'jwt'
         },
         handler: (request, response) => {
-
-          /*Project.aggregate([
+          Project.aggregate([
             {
-              $unwind: '$comments',
-            },
-            {
-              $group: {
-                _id: '$_id',
+              $project: {
+                _id: 1,
+                title: 1,
+                text: 1,
+                author: 1,
+                upvotes: 1,
+                numJoinees: {
+                  $sum: {
+                    $size: '$joinees'
+                  }
+                },
                 numComments: {
                   $sum: {
                     $size: '$comments'
@@ -83,51 +88,6 @@ exports.register = (server, options, next) => {
               }
             }
           ]).then((allProjects) => {
-            return response({allProjects: allProjects}).code(200);
-          }, (error) => {
-            return response(notFound('No projects found'));
-          });*/
-
-
-          /*Project.find().then((allProjects) => {
-            return response({allProjects: allProjects}).code(200);
-          }, (error) => {
-            return response(notFound('No projects found'));
-          });*/
-          //aggregate([{$match:{"profileID":"123456789"}}, {$unwind:"$myArray"}, {$match:{"myArray.read":false}}, {$count:"unread_mail"}])
-          /*Project.aggregate([
-            {
-              $project: {
-                comments: 1
-              }
-            },
-            {
-              $unwind: '$comments'
-            },
-            {
-              $group: {
-                _id: "result",
-                count: { $sum: 1 }
-              }
-            }
-          ]).then((allProjects) => {
-            console.log(allProjects);
-            return response({allProjects: allProjects}).code(200);
-          }, (error) => {
-            return response(notFound('No projects found'));
-          });*/
-
-          Project.aggregate({
-            $group: {
-              _id: "$_id",
-              numComments: {
-                $sum: {
-                  $size: '$comments'
-                }
-              }
-            }
-          }).then((allProjects) => {
-            console.log(allProjects);
             return response({allProjects: allProjects}).code(200);
           }, (error) => {
             return response(notFound('No projects found'));
@@ -262,11 +222,67 @@ exports.register = (server, options, next) => {
               joineeRemoved: true
             }).code(200);
           }, (error) => {
-            return response(notFound('Could not remove from project'));
+            return response(notFound('Could not remove joinee from project'));
           });
         }
       }
-    }
+    },
+
+    // Comment on project
+    {
+      method: 'POST',
+      path: '/api/projects/{id}/comment',
+      config: {
+        validate: {
+          params: getSchema,
+          payload: commentSchema
+        },
+        auth: {
+          strategy: 'jwt'
+        },
+        handler: (request, response) => {
+          Project.findByIdAndUpdate(request.params.id, {$addToSet: {
+            comments: {
+              name: request.payload.name,
+              comment: request.payload.comment
+            }
+          }}, {new: true}).then((updatedProject) => {
+            return response({
+              project: updatedProject
+            }).code(200);
+          }, (error) => {
+            return response(badImplementation('Could not comment on the project'));
+          });
+        }
+      }
+    },
+
+    // Remove comment from project
+    {
+      method: 'DELETE',
+      path: '/api/projects/{id}/comment/{commentId}',
+      config: {
+        validate: {
+          params: deleteCommentSchema
+        },
+        auth: {
+          strategy: 'jwt'
+        },
+        handler: (request, response) => {
+          Project.findByIdAndUpdate(request.params.id, {$pull: {
+            comments: {
+              _id: request.params.commentId
+            }
+          }}, {new: true}).then((updatedProject) => {
+            return response({
+              commentRemoved: true
+            }).code(200);
+          }, (error) => {
+            return response(notFound('Could not remove comment from project'));
+          });
+        }
+      }
+    },
   ]);
 
   next();

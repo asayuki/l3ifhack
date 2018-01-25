@@ -87,7 +87,7 @@ For users api, look up [hapi-users-plugin](http://github.com/asayuki/hapi-users-
 * `GET /api/projects`
     * Default response
         * Array with all projects
-* `GET /api/projects/{id}` (might change, or that title may also be supported)
+* `GET /api/projects/{id}`
     * Default response
         * Object with project
 * `POST /api/projects/{id}/upvote`
@@ -95,3 +95,8 @@ For users api, look up [hapi-users-plugin](http://github.com/asayuki/hapi-users-
     * Default payload
         * `joinee` - Joi.string().required()
 * `DELETE /api/projects/{id}/joinee/{joineeId}`
+* `POST /api/projects/{id}/comment`
+    * Default payload
+        * `name` - Joi.string.required()
+        * `comment` - Joi.string.required()
+* `DELETE /api/projects/{id}/comment/{commentId}`
