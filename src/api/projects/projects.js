@@ -1,6 +1,6 @@
 'use strict';
 
-const { createSchema, updateSchema, getSchema, deleteSchema, joinSchema, deleteJoineeSchema, commentSchema, deleteCommentSchema } = require('./schemas.js');
+const { createSchema, updateSchema, getSchema, deleteSchema, joinSchema, deleteJoineeSchema, commentSchema, deleteCommentSchema, sortSchema } = require('./schemas.js');
 const { badImplementation, notFound, conflict } = require('boom');
 
 const Project = require('./model');
@@ -63,11 +63,21 @@ exports.register = (server, options, next) => {
       method: 'GET',
       path: '/api/projects',
       config: {
+        validate: {
+          query: sortSchema
+        },
         auth: {
           strategy: 'jwt'
         },
         handler: (request, response) => {
-          Project.aggregate([
+          let sorting = null;
+          
+          if (typeof request.query.sortBy !== 'undefined') {
+            sorting = { $sort: {}};
+            sorting['$sort'][request.query.sortBy] = (request.query.order === 'desc') ? -1 : 1;
+          }
+
+          let query = [
             {
               $project: {
                 _id: 1,
@@ -84,10 +94,18 @@ exports.register = (server, options, next) => {
                   $sum: {
                     $size: '$comments'
                   }
-                }
+                },
+                createdAt: 1,
+                updatedAt: 1
               }
             }
-          ]).then((allProjects) => {
+          ];
+
+          if (sorting !== null) {
+            query.push(sorting);
+          }
+
+          Project.aggregate(query).then((allProjects) => {
             return response({allProjects: allProjects}).code(200);
           }, (error) => {
             return response(notFound('No projects found'));

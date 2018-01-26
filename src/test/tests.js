@@ -154,7 +154,6 @@ experiment('Join / Dejoin from project', () => {
       expect(response.result.project).to.be.an.object();
       expect(response.result.project.joinees).to.be.an.array();
       expect(response.result.project.joinees[0].name).to.contain('Testia Testus');
-
       joineeId = response.result.project.joinees[0]._id;
     });
   });

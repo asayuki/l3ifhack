@@ -85,6 +85,9 @@ For users api, look up [hapi-users-plugin](http://github.com/asayuki/hapi-users-
         * `author` - Joi.string().required()
 * `DELETE /api/projects/{id}`
 * `GET /api/projects`
+    * Optional query parameters
+        * `sortBy` Valid options: `title`, `_id`, `createdAt`, `updatedAt`
+        * `order` Valid options: `desc` & `asc`. Defaults to `desc`
     * Default response
         * Array with all projects
 * `GET /api/projects/{id}`

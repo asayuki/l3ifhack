@@ -15,6 +15,11 @@ const updateSchema = Joi.object({
   author: Joi.string().required()
 });
 
+const sortSchema = Joi.object({
+  sortBy: Joi.string().valid('title', 'createdAt', 'updatedAt', '_id'),
+  order: Joi.string().valid('desc', 'asc').default('desc')
+});
+
 const getSchema = Joi.object({
   id: Joi.objectId().required()
 });
@@ -50,5 +55,6 @@ module.exports = {
   joinSchema,
   deleteJoineeSchema,
   commentSchema,
-  deleteCommentSchema
+  deleteCommentSchema,
+  sortSchema
 };
